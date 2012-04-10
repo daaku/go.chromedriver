@@ -1,23 +1,23 @@
 package chromedriver
 
 import (
-	"time"
 	"flag"
 	"fmt"
-	"github.com/nshah/go.httpzip"
-	"github.com/nshah/go.homedir"
 	"github.com/nshah/go.freeport"
-	"path/filepath"
+	"github.com/nshah/go.homedir"
+	"github.com/nshah/go.httpzip"
 	"io"
+	"log"
 	"os"
 	"os/exec"
-	"log"
+	"path/filepath"
 	"strconv"
+	"time"
 )
 
 const (
 	downloadBase = "http://chromedriver.googlecode.com/files/"
-	binaryName = "chromedriver"
+	binaryName   = "chromedriver"
 )
 
 var (
@@ -41,7 +41,7 @@ var (
 
 type Server struct {
 	Port int
-	Cmd *exec.Cmd
+	Cmd  *exec.Cmd
 }
 
 func getDownloadUrl() string {
@@ -62,9 +62,9 @@ func getPort() int {
 
 func exists(file string) bool {
 	_, err := os.Stat(file)
-  if err != nil && os.IsNotExist(err) {
+	if err != nil && os.IsNotExist(err) {
 		return false
-  }
+	}
 	return true
 }
 
@@ -87,8 +87,8 @@ func Install() (string, error) {
 			fileReader, err := file.Open()
 			if err != nil {
 				return "", fmt.Errorf(
-					"Error reading file stream for file %s in zip zip file " +
-					"at URL %s with error %s.",
+					"Error reading file stream for file %s in zip zip file "+
+						"at URL %s with error %s.",
 					binaryName,
 					url,
 					err)
@@ -129,10 +129,10 @@ func Start() (*Server, error) {
 		return nil, err
 	}
 	port := getPort()
-	cmd := exec.Command(binaryPath, "-port=" + strconv.Itoa(port))
+	cmd := exec.Command(binaryPath, "-port="+strconv.Itoa(port))
 	server := &Server{
 		Port: port,
-		Cmd: cmd,
+		Cmd:  cmd,
 	}
 	err = cmd.Start()
 	if err != nil {
