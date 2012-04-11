@@ -123,6 +123,14 @@ func Install() (string, error) {
 	return binaryPath, nil
 }
 
+func tmpdir() string {
+	dir := os.Getenv("TMPDIR")
+	if dir != "" {
+		return dir
+	}
+	return "/tmp"
+}
+
 func Start() (*Server, error) {
 	binaryPath, err := Install()
 	if err != nil {
@@ -130,6 +138,7 @@ func Start() (*Server, error) {
 	}
 	port := getPort()
 	cmd := exec.Command(binaryPath, "-port="+strconv.Itoa(port))
+	cmd.Dir = tmpdir() // this ensures the log file doesn't get created in PWD
 	server := &Server{
 		Port: port,
 		Cmd:  cmd,
