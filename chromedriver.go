@@ -134,10 +134,22 @@ func Start() (*Server, error) {
 		Port: port,
 		Cmd:  cmd,
 	}
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		log.Fatalf("Failed to get stdout pipe for chromedriver server: %s.", err)
+	}
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		log.Fatalf("Failed to get stderr pipe for chromedriver server: %s.", err)
+	}
 	err = cmd.Start()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to start binary %s with error %s.",
 			binaryPath, err)
+	}
+	if *verbose {
+		go io.Copy(os.Stdout, stdout)
+		go io.Copy(os.Stderr, stderr)
 	}
 	// TODO be smarter about this
 	time.Sleep(500 * time.Millisecond)
