@@ -12,12 +12,13 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"sync"
 	"time"
 )
 
 const (
 	downloadBase = "http://chromedriver.googlecode.com/files/"
-	binaryName   = "chromedriver"
+	binaryBase   = "chromedriver"
 )
 
 var (
@@ -37,11 +38,19 @@ var (
 		"chromedriver.port",
 		0,
 		"Port to bind chromedriver server to. Defaults to random port.")
+
+	once         = &sync.Once{}
+	binaryPath   string
+	installError error
 )
 
 type Server struct {
 	Port int
 	Cmd  *exec.Cmd
+}
+
+func init() {
+	binaryPath = filepath.Join(*cacheDir, binaryBase+"-"+*version)
 }
 
 func getDownloadUrl() string {
@@ -68,47 +77,53 @@ func exists(file string) bool {
 	return true
 }
 
-func Install() (string, error) {
-	binaryPath := filepath.Join(*cacheDir, binaryName)
+func Install() error {
+	once.Do(func() {
+		installError = realInstall()
+	})
+	return installError
+}
+
+func realInstall() error {
 	if exists(binaryPath) {
-		return binaryPath, nil
+		return nil
 	}
 
 	url := getDownloadUrl()
 	zipfile, err := httpzip.ReadURL(url)
 	if err != nil {
-		return "", fmt.Errorf(
+		return fmt.Errorf(
 			"Reading zip content from http URL % failed with error %s .", url, err)
 	}
 	found := false
 	for _, file := range zipfile.File {
-		if file.Name == binaryName {
+		if file.Name == binaryBase {
 			found = true
 			fileReader, err := file.Open()
 			if err != nil {
-				return "", fmt.Errorf(
+				return fmt.Errorf(
 					"Error reading file stream for file %s in zip zip file "+
 						"at URL %s with error %s.",
-					binaryName,
+					binaryBase,
 					url,
 					err)
 			}
 			defer fileReader.Close()
 			err = os.MkdirAll(filepath.Dir(binaryPath), os.FileMode(0777))
 			if err != nil {
-				return "", fmt.Errorf(
+				return fmt.Errorf(
 					"Creating directory %s to store binary failed with error %s",
 					filepath.Dir(binaryPath), err)
 			}
 			binaryWriter, err := os.Create(binaryPath)
 			if err != nil {
-				return "", fmt.Errorf(
+				return fmt.Errorf(
 					"Error creating output file %s: %s", binaryPath, err)
 			}
 			defer binaryWriter.Close()
 			err = binaryWriter.Chmod(os.FileMode(0777))
 			if err != nil {
-				return "", fmt.Errorf(
+				return fmt.Errorf(
 					"Error setting executable bit on file %s with err %s",
 					binaryPath, err)
 			}
@@ -117,28 +132,20 @@ func Install() (string, error) {
 		}
 	}
 	if !found {
-		return "", fmt.Errorf(
-			"Could not find file %s in the zip file at URL %s.", binaryName, url)
+		return fmt.Errorf(
+			"Could not find file %s in the zip file at URL %s.", binaryBase, url)
 	}
-	return binaryPath, nil
-}
-
-func tmpdir() string {
-	dir := os.Getenv("TMPDIR")
-	if dir != "" {
-		return dir
-	}
-	return "/tmp"
+	return nil
 }
 
 func Start() (*Server, error) {
-	binaryPath, err := Install()
+	err := Install()
 	if err != nil {
 		return nil, err
 	}
 	port := getPort()
 	cmd := exec.Command(binaryPath, "-port="+strconv.Itoa(port))
-	cmd.Dir = tmpdir() // this ensures the log file doesn't get created in PWD
+	cmd.Dir = *cacheDir
 	server := &Server{
 		Port: port,
 		Cmd:  cmd,
