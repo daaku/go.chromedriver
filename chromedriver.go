@@ -1,3 +1,6 @@
+// Package to install and launch chromedriver servers. This allows for
+// an embeddable webdriver environment. It provides some command
+// line flags to control the global configuration.
 package chromedriver
 
 import (
@@ -44,6 +47,7 @@ var (
 	installError error
 )
 
+// Represents a running chromedriver server.
 type Server struct {
 	Port int
 	Cmd  *exec.Cmd
@@ -77,7 +81,8 @@ func exists(file string) bool {
 	return true
 }
 
-func Install() error {
+// Fetch and install the chromedriver server binary if necessary.
+func install() error {
 	once.Do(func() {
 		installError = realInstall()
 	})
@@ -138,8 +143,10 @@ func realInstall() error {
 	return nil
 }
 
+// Start a new chromedriver server. It is bound to a random port. This
+// will install the server if necessary.
 func Start() (*Server, error) {
-	err := Install()
+	err := install()
 	if err != nil {
 		return nil, err
 	}
@@ -172,14 +179,17 @@ func Start() (*Server, error) {
 	return server, nil
 }
 
+// Returns the webdriver server URL.
 func (s *Server) URL() string {
 	return "http://0.0.0.0:" + strconv.Itoa(s.Port)
 }
 
+// Stop this server.
 func (s *Server) Stop() error {
 	return s.Cmd.Process.Kill()
 }
 
+// Stop this server, and fatal if it can't be stopped.
 func (s *Server) StopOrFatal() {
 	err := s.Stop()
 	if err != nil {
