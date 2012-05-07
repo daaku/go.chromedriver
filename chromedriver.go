@@ -1,6 +1,7 @@
-// Package to install and launch chromedriver servers. This allows for
-// an embeddable webdriver environment. It provides some command
-// line flags to control the global configuration.
+// Package chromedriver provides APIs to install and launch
+// chromedriver servers. This allows for an embeddable webdriver
+// environment. It provides some command line flags to control the
+// global configuration.
 package chromedriver
 
 import (
