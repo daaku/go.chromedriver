@@ -7,9 +7,9 @@ package chromedriver
 import (
 	"flag"
 	"fmt"
-	"github.com/nshah/go.freeport"
-	"github.com/nshah/go.homedir"
-	"github.com/nshah/go.httpzip"
+	"github.com/daaku/go.freeport"
+	"github.com/daaku/go.homedir"
+	"github.com/daaku/go.httpzip"
 	"io"
 	"log"
 	"os"
