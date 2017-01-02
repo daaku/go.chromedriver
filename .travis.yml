@@ -9,7 +9,7 @@ addons:
       - google-chrome-stable
 
 go:
-  - 1.7
+  - 1.x
 
 before_install:
   - go get -v github.com/golang/lint/golint
