@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"sync"
 	"time"
@@ -60,8 +61,12 @@ func init() {
 }
 
 func getDownloadUrl() string {
-	// TODO consider OS
-	return downloadBase + *version + "/chromedriver_mac64.zip"
+	os := map[string]string{
+		"darwin":  "mac64",
+		"linux":   "linux64",
+		"windows": "win32",
+	}[runtime.GOOS]
+	return downloadBase + *version + "/chromedriver_" + os + ".zip"
 }
 
 func getPort() int {
