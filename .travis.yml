@@ -14,17 +14,11 @@ go:
 before_install:
   - go get -v github.com/golang/lint/golint
 
-install:
-  - go install -race -v std
-  - go get -race -t -v ./...
-  - go install -race -v ./...
-
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
 
 script:
   - go vet ./...
-  - $HOME/gopath/bin/golint .
-  - go test -cpu=2 -race -v ./...
-  - go test -cpu=2 -covermode=atomic ./...
+  - $GOPATH/bin/golint .
+  - go test -cpu=2 -v ./...
