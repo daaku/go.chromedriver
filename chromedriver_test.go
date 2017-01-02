@@ -13,6 +13,7 @@ func TestGoogle(t *testing.T) {
 	capabilities.SetBrowser(goselenium.ChromeBrowser())
 	chromedriver, err := Start()
 	ensure.Nil(t, err)
+	defer chromedriver.StopOrFatal()
 	driver, err := goselenium.NewSeleniumWebDriver(chromedriver.URL(), capabilities)
 	ensure.Nil(t, err)
 	_, err = driver.CreateSession()
