@@ -7,9 +7,6 @@ package chromedriver
 import (
 	"flag"
 	"fmt"
-	"github.com/daaku/go.freeport"
-	"github.com/daaku/go.homedir"
-	"github.com/daaku/go.httpzip"
 	"io"
 	"log"
 	"os"
@@ -18,6 +15,10 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/daaku/go.homedir"
+	"github.com/daaku/go.httpzip"
+	"github.com/facebookgo/freeport"
 )
 
 const (
