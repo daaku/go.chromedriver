@@ -50,7 +50,7 @@ var (
 	installError error
 )
 
-// Represents a running chromedriver server.
+// Server represents a running chromedriver instance.
 type Server struct {
 	Port int
 	Cmd  *exec.Cmd
@@ -60,7 +60,7 @@ func init() {
 	binaryPath = filepath.Join(*cacheDir, binaryBase+"-"+*version)
 }
 
-func getDownloadUrl() string {
+func getDownloadURL() string {
 	os := map[string]string{
 		"darwin":  "mac64",
 		"linux":   "linux64",
@@ -101,11 +101,11 @@ func realInstall() error {
 		return nil
 	}
 
-	url := getDownloadUrl()
+	url := getDownloadURL()
 	zipfile, err := httpzip.ReadURL(url)
 	if err != nil {
 		return fmt.Errorf(
-			"Reading zip content from http URL % failed with error %s .", url, err)
+			"reading zip content from http URL %s failed with error %s .", url, err)
 	}
 	found := false
 	for _, file := range zipfile.File {
@@ -114,7 +114,7 @@ func realInstall() error {
 			fileReader, err := file.Open()
 			if err != nil {
 				return fmt.Errorf(
-					"Error reading file stream for file %s in zip zip file "+
+					"error reading file stream for file %s in zip zip file "+
 						"at URL %s with error %s.",
 					binaryBase,
 					url,
@@ -124,13 +124,13 @@ func realInstall() error {
 			err = os.MkdirAll(filepath.Dir(binaryPath), os.FileMode(0777))
 			if err != nil {
 				return fmt.Errorf(
-					"Creating directory %s to store binary failed with error %s",
+					"creating directory %s to store binary failed with error %s",
 					filepath.Dir(binaryPath), err)
 			}
 			binaryWriter, err := os.Create(binaryPath)
 			if err != nil {
 				return fmt.Errorf(
-					"Error creating output file %s: %s", binaryPath, err)
+					"error creating output file %s: %s", binaryPath, err)
 			}
 			defer binaryWriter.Close()
 			err = binaryWriter.Chmod(os.FileMode(0777))
@@ -186,7 +186,7 @@ func Start() (*Server, error) {
 	return server, nil
 }
 
-// Returns the webdriver server URL.
+// URL returns the webdriver server URL.
 func (s *Server) URL() string {
 	return "http://0.0.0.0:" + strconv.Itoa(s.Port)
 }
@@ -196,7 +196,7 @@ func (s *Server) Stop() error {
 	return s.Cmd.Process.Kill()
 }
 
-// Stop this server, and fatal if it can't be stopped.
+// StopOrFatal stops this server, and fatals if it can't be stopped.
 func (s *Server) StopOrFatal() {
 	err := s.Stop()
 	if err != nil {
