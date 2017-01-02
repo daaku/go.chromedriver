@@ -22,27 +22,27 @@ import (
 )
 
 const (
-	downloadBase = "http://chromedriver.googlecode.com/files/"
+	downloadBase = "https://chromedriver.storage.googleapis.com/"
 	binaryBase   = "chromedriver"
 )
 
 var (
 	version = flag.String(
 		"chromedriver.version",
-		"19.0.1068.0",
-		"The chromedriver binary version to use.")
+		"2.27",
+		"chromedriver binary version to use")
 	cacheDir = flag.String(
 		"chromedriver.cache-dir",
 		filepath.Join(homedir.Get(), ".chromedriver"),
-		"Location to store or load chromedriver binary from.")
+		"location to store or load chromedriver binary from")
 	verbose = flag.Bool(
 		"chromedriver.v",
 		false,
-		"Shows chromdriver server logs and more verbose output.")
+		"shows chromdriver server logs and more verbose output")
 	port = flag.Int(
 		"chromedriver.port",
 		0,
-		"Port to bind chromedriver server to. Defaults to random port.")
+		"port to bind chromedriver server to")
 
 	once         = &sync.Once{}
 	binaryPath   string
@@ -61,7 +61,7 @@ func init() {
 
 func getDownloadUrl() string {
 	// TODO consider OS
-	return downloadBase + "chromedriver_mac_" + *version + ".zip"
+	return downloadBase + *version + "/chromedriver_mac64.zip"
 }
 
 func getPort() int {
