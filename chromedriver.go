@@ -105,7 +105,7 @@ func realInstall() error {
 	zipfile, err := httpzip.ReadURL(url)
 	if err != nil {
 		return fmt.Errorf(
-			"reading zip content from http URL %s failed with error %s .", url, err)
+			"reading zip content from http URL %s failed with error %s", url, err)
 	}
 	found := false
 	for _, file := range zipfile.File {
@@ -115,7 +115,7 @@ func realInstall() error {
 			if err != nil {
 				return fmt.Errorf(
 					"error reading file stream for file %s in zip zip file "+
-						"at URL %s with error %s.",
+						"at URL %s with error %s",
 					binaryBase,
 					url,
 					err)
@@ -145,7 +145,7 @@ func realInstall() error {
 	}
 	if !found {
 		return fmt.Errorf(
-			"Could not find file %s in the zip file at URL %s.", binaryBase, url)
+			"Could not find file %s in the zip file at URL %s", binaryBase, url)
 	}
 	return nil
 }
@@ -174,7 +174,7 @@ func Start() (*Server, error) {
 	}
 	err = cmd.Start()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to start binary %s with error %s.",
+		return nil, fmt.Errorf("failed to start binary %s with error %s",
 			binaryPath, err)
 	}
 	if *verbose {
